@@ -7,8 +7,13 @@ package com.example.sergey.notes.model;
 import android.database.Cursor;
 
 import com.example.sergey.notes.db.NotesContract;
+import com.tjeannin.provigen.ProviGenBaseContract;
 
-public class Note {
+import java.io.Serializable;
+
+public class Note implements Serializable {
+
+    private long mId;
 
     private String mTitle = null;
 
@@ -19,9 +24,14 @@ public class Note {
     public Note() {}
 
     public Note(Cursor data) {
+        mId = data.getLong(data.getColumnIndex(ProviGenBaseContract._ID));
         mTitle = data.getString(data.getColumnIndex(NotesContract.TITLE_COLUMN));
         mText = data.getString(data.getColumnIndex(NotesContract.TEXT_COLUMN));
         mTime = data.getString(data.getColumnIndex(NotesContract.TIME_COLUMN));
+    }
+
+    public long getId() {
+        return mId;
     }
 
     public String getTitle() {

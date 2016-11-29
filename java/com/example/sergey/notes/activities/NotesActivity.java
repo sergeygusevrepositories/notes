@@ -1,5 +1,6 @@
 package com.example.sergey.notes.activities;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -13,9 +14,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.sergey.notes.R;
 import com.example.sergey.notes.adapters.NotesAdapter;
+import com.example.sergey.notes.adapters.NotesAdapter.NotesViewHolder;
 import com.example.sergey.notes.db.NotesContract;
 import com.example.sergey.notes.model.Note;
 
@@ -26,7 +29,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class NotesActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class NotesActivity extends AppCompatActivity
+        implements
+        LoaderManager.LoaderCallbacks<Cursor>,
+        View.OnClickListener {
 
     @BindView(R.id.notes_recycler_view)
     protected RecyclerView recyclerView;
@@ -46,6 +52,12 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
                 false);
         recyclerView.setLayoutManager(layoutManager);
         getSupportLoaderManager().initLoader(R.id.notes_loader, null, this);
+
+        for(int i = 0; i < 10; i ++) {
+            ContentValues values = new ContentValues();
+            values.put(NotesContract.TEXT_COLUMN, "fddfdf" + i);
+            getContentResolver().insert(NotesContract.CONTENT_URI, values);
+        }
     }
 
     @Override
@@ -82,6 +94,7 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
             default:
                 return super.onOptionsItemSelected(item);
         }
+
     }
 
     @Override
@@ -104,10 +117,18 @@ public class NotesActivity extends AppCompatActivity implements LoaderManager.Lo
         NotesAdapter adapter = new NotesAdapter();
         recyclerView.setAdapter(adapter);
         adapter.setDataSource(dataSource);
+        adapter.setOnItemClickListener(this);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        NotesViewHolder holder = (NotesViewHolder) recyclerView.findContainingViewHolder(view);
+        if(holder == null) return;
+        startActivity(EditNoteActivity.newInstance(this, holder.getNote().getId()));
     }
 }

@@ -33,4 +33,5 @@ public interface NotesContract extends ProviGenBaseContract {
 
     @ContentUri
     public static final Uri CONTENT_URI = Uri.parse(URI);
+
 }
